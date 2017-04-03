@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
 
 
         password = (TextView) findViewById(R.id.passwordTextView);
-        int[] old_pass_out = passCreator();
+        final int[] old_pass_out = passCreator();
         String old_output = "Goal: " + old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
 
         //String temp = getFilesDir().getAbsolutePath();
@@ -173,22 +173,31 @@ public class MainActivity extends Activity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-               // File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-                String filename = "TESTERINO";
-                String string = "Hello world!";
-                FileOutputStream outputStream;
-
-                try {
-                    //File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-
-                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(string.getBytes());
-                    outputStream.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                String temp;
+                if (comparePassword(old_pass_out)) {
+                        temp = "true";
                 }
+                else {
+                    temp = "false";
+                }
+                password.setText(temp, TextView.BufferType.SPANNABLE);
 
+
+//               // File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
+//                String filename = "TESTERINO";
+//                String string = "Hello world!";
+//                FileOutputStream outputStream;
+//
+//                try {
+//                    //File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
+//
+//                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+//                    outputStream.write(string.getBytes());
+//                    outputStream.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//
 //                try {
 //                    FileInputStream fin = openFileInput(filename);
 //                    int c;
@@ -246,7 +255,21 @@ public class MainActivity extends Activity {
         return pass;
     }
 
-    public boolean comparePassword(){
+    public boolean comparePassword(int[] true_pass){
+        int [] curr_pass = new int[8];
+        curr_pass[0] = timePicker1.getCurrentHour(); curr_pass[1] = timePicker1.getCurrentMinute();
+
+        curr_pass[2] = timePicker2.getCurrentHour(); curr_pass[3] = timePicker2.getCurrentMinute();
+
+        curr_pass[4] = timePicker3.getCurrentHour(); curr_pass[5] = timePicker3.getCurrentMinute();
+
+        curr_pass[6] = timePicker4.getCurrentHour(); curr_pass[7] = timePicker4.getCurrentMinute();
+
+        for(int i = 0; i<8; i++){
+            if(curr_pass[i] != true_pass[i]){
+                return false;
+            }
+        }
         return true;
     }
 
