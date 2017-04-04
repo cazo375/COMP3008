@@ -164,10 +164,10 @@ public class Login extends AppCompatActivity {
 
         setTime();
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current Input: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
-                + ",    " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
-                + ",    " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
-                + ",    " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
+        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
+                + ", " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
+                + ", " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
+                + ", " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
         current_password.setText(new_output, TextView.BufferType.SPANNABLE);
 
 
@@ -189,10 +189,14 @@ public class Login extends AppCompatActivity {
 
         check_button = (Button)findViewById(R.id.CheckButton);
         password_check = (TextView) findViewById(R.id.PasswordCheck);
+        password_check.setVisibility(View.INVISIBLE);
         check_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!isClicked) {
+                    if(password_check.getVisibility() == View.INVISIBLE) {
+                        password_check.setVisibility(View.VISIBLE);
+                    }
                     String temp;
                     if (comparePassword(test_password)) {
                         temp = "true";
@@ -282,10 +286,10 @@ public class Login extends AppCompatActivity {
 
     public void updateCurrentPasswordText(){
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current Input: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
-                + ",    " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
-                + ",    " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
-                + ",    " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
+        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
+                + ", " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
+                + ", " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
+                + ", " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
         current_password.setText(new_output);
 
 
@@ -293,7 +297,7 @@ public class Login extends AppCompatActivity {
 
     public void readPassword(){
         String filename = "";
-        pass_type = rand.nextInt(3) + 1;
+        pass_type = rand.nextInt(3);
         if(pass_type==0) {
             filename = "Gmail";
         }
