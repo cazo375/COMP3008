@@ -1,11 +1,11 @@
 package com.opticnerve.nccc;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -30,11 +30,18 @@ public class Login extends AppCompatActivity {
     private Button clock3;
     private Button clock4;
 
-    private Button saveButton;
+    private Button proceed_button;
+    private Button check_button;
 
     private Random rand;
     private TextView password;
     private TextView current_password;
+    private TextView password_check;
+    private TextView password_type;
+
+    private int pass_type;
+    private static boolean isClicked = false;
+    final int[] test_password = new int[8];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +50,7 @@ public class Login extends AppCompatActivity {
         context = getApplicationContext();
 
         rand = new Random();
-
+        readPassword();
         timePicker1 = (TimePicker) findViewById(R.id.timePicker1);
         timePicker1.setIs24HourView(true);
         timePicker1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
@@ -171,40 +178,50 @@ public class Login extends AppCompatActivity {
         //String temp = getFilesDir().getAbsolutePath();
         password.setText(old_output, TextView.BufferType.SPANNABLE);
         final String filename = old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
-        saveButton = (Button)findViewById(R.id.Save_Button);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        proceed_button = (Button)findViewById(R.id.ProceedButton);
+        proceed_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-                String filename = "TESTERINO";
-                String string = "Hello world!";
-                FileOutputStream outputStream;
-
-//                try {
-//                    //File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-//
-//                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-//                    outputStream.write(string.getBytes());
-//                    outputStream.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-
-                try {
-                    FileInputStream fin = openFileInput(filename);
-                    int c;
-                    String temp = "";
-                    while ((c = fin.read()) != -1) {
-                        temp = temp + Character.toString((char) c);
-                    }
-                    //password.setText(temp, TextView.BufferType.SPANNABLE);
-                    Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
+                startActivity(new Intent(Login.this, Login.class));
+                isClicked = false;
             }
         });
+
+        check_button = (Button)findViewById(R.id.CheckButton);
+        password_check = (TextView) findViewById(R.id.PasswordCheck);
+        check_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isClicked) {
+                    String temp;
+                    if (comparePassword(test_password)) {
+                        temp = "true";
+                        password_check.setTextColor(Color.GREEN);
+                    } else {
+                        temp = "false";
+                        password_check.setTextColor(Color.RED);
+                    }
+                    isClicked = true;
+                    password_check.setText(temp, TextView.BufferType.SPANNABLE);
+                }
+
+
+            }
+        });
+
+        password_type = (TextView)findViewById(R.id.PasswordType);
+        String type = "";
+        if(pass_type==0) {
+            type = "Gmail";
+        }
+        if(pass_type==1) {
+            type = "Facebook";
+        }
+        if(pass_type==2) {
+            type = "Bank";
+        }
+        password_type.setText(type, TextView.BufferType.SPANNABLE);
+
 
     }
 
@@ -224,14 +241,11 @@ public class Login extends AppCompatActivity {
     }
 
     public int hourCreator(){
-
-
         int  hour = rand.nextInt(24) + 1;
         return hour;
     }
 
     public int minCreator(){
-
         int  min = rand.nextInt(59);
         return min;
     }
@@ -248,10 +262,23 @@ public class Login extends AppCompatActivity {
         return pass;
     }
 
-    public boolean comparePassword(){
+    public boolean comparePassword(int[] true_pass){
+        int [] curr_pass = new int[8];
+        curr_pass[0] = timePicker1.getCurrentHour(); curr_pass[1] = timePicker1.getCurrentMinute();
+
+        curr_pass[2] = timePicker2.getCurrentHour(); curr_pass[3] = timePicker2.getCurrentMinute();
+
+        curr_pass[4] = timePicker3.getCurrentHour(); curr_pass[5] = timePicker3.getCurrentMinute();
+
+        curr_pass[6] = timePicker4.getCurrentHour(); curr_pass[7] = timePicker4.getCurrentMinute();
+
+        for(int i = 0; i<8; i++){
+            if(curr_pass[i] != true_pass[i]){
+                return false;
+            }
+        }
         return true;
     }
-
 
     public void updateCurrentPasswordText(){
         current_password = (TextView) findViewById(R.id.CurrentPassword);
@@ -262,5 +289,64 @@ public class Login extends AppCompatActivity {
         current_password.setText(new_output);
 
 
+    }
+
+    public void readPassword(){
+        String filename = "";
+        pass_type = rand.nextInt(3) + 1;
+        if(pass_type==0) {
+            filename = "Gmail";
+        }
+        if(pass_type==1) {
+            filename = "Facebook";
+        }
+        if(pass_type==2) {
+            filename = "Bank";
+        }
+
+        try {
+            FileInputStream fin = openFileInput(filename);
+            int c;
+            String temp = "";
+            while ((c = fin.read()) != -1) {
+                temp = temp + Character.toString((char) c);
+            }
+            int foot = 0;
+            int head = temp.indexOf(",");
+            test_password[0] = Integer.parseInt(temp.substring(foot, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[1] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[2] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[3] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[4] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[5] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf(",", foot+1);
+            test_password[6] = Integer.parseInt(temp.substring(foot+1, head));
+
+            foot = head;
+            head = temp.indexOf("\n", foot+1);
+            test_password[7] = Integer.parseInt(temp.substring(foot+1, head));
+
+            password.setText(temp, TextView.BufferType.SPANNABLE);
+            Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -10,19 +10,11 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/Save_Button"
+        android:id="@+id/ProceedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Proceed"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/passwordTextView"
-        android:layout_above="@+id/Save_Button"
         android:layout_centerHorizontal="true" />
 
     <TimePicker
@@ -56,14 +48,6 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Text"
-        android:id="@+id/CurrentPassword"
-        android:layout_above="@+id/timePicker1"
-        android:layout_centerHorizontal="true" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
@@ -102,5 +86,49 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/button3"
         android:layout_toEndOf="@+id/button3" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="11dp"
+        android:textSize="16sp"
+        android:id="@+id/PasswordCheck" />
+
+    <Button
+        android:text="Check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ProceedButton"
+        android:layout_toLeftOf="@+id/ProceedButton"
+        android:layout_toStartOf="@+id/ProceedButton"
+        android:layout_marginRight="13dp"
+        android:layout_marginEnd="13dp"
+        android:id="@+id/CheckButton" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/PasswordType"
+        android:textSize="16sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/CurrentPassword"
+        android:textSize="18sp"
+        android:layout_below="@+id/button4"
+        android:layout_alignRight="@+id/ProceedButton"
+        android:layout_alignEnd="@+id/ProceedButton" />
 
 </RelativeLayout>

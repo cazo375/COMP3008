@@ -1,10 +1,8 @@
 package com.opticnerve.nccc;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +11,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Random;
 
 
@@ -28,11 +28,17 @@ public class MainActivity extends Activity {
     private Button clock3;
     private Button clock4;
 
-    private Button saveButton;
+    private Button check_button;
+    private Button proceed_button;
+
 
     private Random rand;
     private TextView password;
     private TextView current_password;
+    private TextView password_check;
+    private TextView password_type;
+
+    private static int proceedCounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,13 +161,13 @@ public class MainActivity extends Activity {
 
         setTime();
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current Input: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
+        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
                 + ",    " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
                 + ",    " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
                 + ",    " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
         current_password.setText(new_output, TextView.BufferType.SPANNABLE);
-
-
+        password_check= (TextView) findViewById(R.id.PasswordCheck);
+        password_check.setText("", TextView.BufferType.SPANNABLE);
         password = (TextView) findViewById(R.id.passwordTextView);
         final int[] old_pass_out = passCreator();
         String old_output = "Goal: " + old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
@@ -169,51 +175,87 @@ public class MainActivity extends Activity {
         //String temp = getFilesDir().getAbsolutePath();
         password.setText(old_output, TextView.BufferType.SPANNABLE);
         final String filename = old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
-        saveButton = (Button)findViewById(R.id.Save_Button);
-        saveButton.setOnClickListener(new View.OnClickListener() {
+
+        check_button = (Button)findViewById(R.id.CheckButton);
+        check_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String temp;
                 if (comparePassword(old_pass_out)) {
-                        temp = "true";
+                    temp = "true";
+                    password_check.setTextColor(Color.GREEN);
                 }
                 else {
                     temp = "false";
+                    password_check.setTextColor(Color.RED);
                 }
-                password.setText(temp, TextView.BufferType.SPANNABLE);
+                password_check.setText(temp, TextView.BufferType.SPANNABLE);
+            }
+        });
+        password_type = (TextView)findViewById(R.id.PasswordType);
+        String type = "";
+        if(proceedCounter==0) {
+            type = "Gmail";
+        }
+        if(proceedCounter==1) {
+            type = "Facebook";
+        }
+        if(proceedCounter==2) {
+            type = "Bank";
+        }
+        password_type.setText(type, TextView.BufferType.SPANNABLE);
 
+        proceed_button = (Button)findViewById(R.id.ProceedButton);
 
-//               // File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-//                String filename = "TESTERINO";
-//                String string = "Hello world!";
-//                FileOutputStream outputStream;
-//
-//                try {
-//                    //File file = new File("/storage/emulated/0", "/storage/emulated/0/TESTERINO");
-//
-//                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-//                    outputStream.write(string.getBytes());
-//                    outputStream.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//                try {
-//                    FileInputStream fin = openFileInput(filename);
-//                    int c;
-//                    String temp = "";
-//                    while ((c = fin.read()) != -1) {
-//                        temp = temp + Character.toString((char) c);
+        proceed_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(proceedCounter<2) {
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    try {
+                        String filename = "";
+                        if(proceedCounter==0) {
+                            filename = "Gmail";
+                        }
+                        if(proceedCounter==1) {
+                            filename = "Facebook";
+                        }
+                        if(proceedCounter==2) {
+                            filename = "Bank";
+                        }
+                        String string = old_pass_out[0] + "," + old_pass_out[1] + "," + old_pass_out[2] + "," + old_pass_out[3] + ","
+                                + old_pass_out[4] + "," + old_pass_out[5] + "," + old_pass_out[6] + "," + old_pass_out[7] + "\n";
+                        FileOutputStream outputStream;
+                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                        outputStream.write(string.getBytes());
+                        outputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    proceedCounter+=1;
+//                    try {
+//                        FileInputStream fin = openFileInput(filename);
+//                        int c;
+//                        String temp = "";
+//                        while ((c = fin.read()) != -1) {
+//                            temp = temp + Character.toString((char) c);
+//                        }
+//                        password_check.setText(temp, TextView.BufferType.SPANNABLE);
+//                        Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
+//                    } catch (Exception e){
+//                        e.printStackTrace();
 //                    }
-//                    //password.setText(temp, TextView.BufferType.SPANNABLE);
-//                    Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
-//                } catch (Exception e){
-//                    e.printStackTrace();
-//                }
+
+                }else{
+                    startActivity(new Intent(MainActivity.this, IntroPage.class));
+                    proceedCounter=0;
+                }
             }
         });
 
     }
+
+
 
     public void setTime() {
         timePicker1.setCurrentHour(hourCreator());
@@ -276,7 +318,7 @@ public class MainActivity extends Activity {
 
     public void updateCurrentPasswordText(){
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current Input: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
+        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
                 + ",    " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
                 + ",    " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
                 + ",    " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
