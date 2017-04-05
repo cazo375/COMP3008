@@ -5,18 +5,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Random;
 
 
 public class MainActivity extends Activity {
+    private static final String LOG_TAG = "MY_TAG";
     private TimePicker timePicker1;
     private TimePicker timePicker2;
     private TimePicker timePicker3;
@@ -225,10 +231,23 @@ public class MainActivity extends Activity {
                         }
                         String string = old_pass_out[0] + "," + old_pass_out[1] + "," + old_pass_out[2] + "," + old_pass_out[3] + ","
                                 + old_pass_out[4] + "," + old_pass_out[5] + "," + old_pass_out[6] + "," + old_pass_out[7] + "\n";
-                        FileOutputStream outputStream;
-                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                        outputStream.write(string.getBytes());
-                        outputStream.close();
+                        //(niresh) changes
+                        Boolean flag = isExternalStorageWritable();
+                        Boolean flag2 = isExternalStorageReadable();
+                        Log.e(LOG_TAG,"is it writable: "+flag);
+                        Log.e(LOG_TAG,"is it readable: "+flag2);
+
+                        File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"testing.txt");
+
+                        Writer writer = null;
+                        try {
+                            writer = new FileWriter(root,true);
+                            writer.append("Attempt: " + string + "\n");
+                            writer.flush();
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -246,6 +265,7 @@ public class MainActivity extends Activity {
 //                        e.printStackTrace();
 //                    }
 
+
                 }else{
                     startActivity(new Intent(MainActivity.this, IntroPage.class));
                     proceedCounter=0;
@@ -255,8 +275,23 @@ public class MainActivity extends Activity {
 
     }
 
-
-
+    /* Checks if external storage is available for read and write */
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
     public void setTime() {
         timePicker1.setCurrentHour(hourCreator());
         timePicker1.setCurrentMinute( minCreator());
