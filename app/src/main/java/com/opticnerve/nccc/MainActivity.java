@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -231,21 +232,19 @@ public class MainActivity extends Activity {
                         }
                         String string = old_pass_out[0] + "," + old_pass_out[1] + "," + old_pass_out[2] + "," + old_pass_out[3] + ","
                                 + old_pass_out[4] + "," + old_pass_out[5] + "," + old_pass_out[6] + "," + old_pass_out[7] + "\n";
-//                        FileOutputStream outputStream;
-//                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-//                        outputStream.write(string.getBytes());
-//                        outputStream.close();
-                        //(niresh) changes
+                        FileOutputStream outputStream;
+                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                        outputStream.write(string.getBytes());
+                        outputStream.close();
+
+                        //Writing to storage
                         Boolean flag = isExternalStorageWritable();
-                        Boolean flag2 = isExternalStorageReadable();
                         Log.e(LOG_TAG,"is it writable: "+flag);
-                        Log.e(LOG_TAG,"is it readable: "+flag2);
 
                         File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"testing.txt");
 
-                        Writer writer = null;
                         try {
-                            writer = new FileWriter(root,true);
+                            Writer writer = new FileWriter(root,true);
                             writer.append("Attempt: " + string + "\n");
                             writer.flush();
                             writer.close();
@@ -287,15 +286,7 @@ public class MainActivity extends Activity {
         }
         return false;
     }
-    /* Checks if external storage is available to at least read */
-    public boolean isExternalStorageReadable() {
-        String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
-    }
+
     public void setTime() {
         timePicker1.setCurrentHour(hourCreator());
         timePicker1.setCurrentMinute( minCreator());
