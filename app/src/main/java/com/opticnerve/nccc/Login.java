@@ -33,7 +33,7 @@ public class Login extends AppCompatActivity {
     private Button proceed_button;
     private Button check_button;
 
-    private TextView current_password;
+    private TextView curr_pass;
     private TextView password_check;
     private TextView password_type;
 
@@ -68,7 +68,7 @@ public class Login extends AppCompatActivity {
         clockFace1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                updateCurrentPasswordText();
+                //updateCurrentLoginPasswordText();
             }
         });
 
@@ -78,7 +78,7 @@ public class Login extends AppCompatActivity {
         clockFace2.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                updateCurrentPasswordText();
+                //updateCurrentLoginPasswordText();
             }
         });
 
@@ -88,7 +88,7 @@ public class Login extends AppCompatActivity {
         clockFace3.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                updateCurrentPasswordText();
+                //updateCurrentLoginPasswordText();
             }
         });
 
@@ -98,7 +98,7 @@ public class Login extends AppCompatActivity {
         clockFace4.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                updateCurrentPasswordText();
+                //updateCurrentLoginPasswordText();
             }
         });
 
@@ -175,12 +175,13 @@ public class Login extends AppCompatActivity {
         setTime();
 
         // init current password display
-        current_password = (TextView) findViewById(R.id.CurrentPassword);
+        /*curr_pass = (TextView) findViewById(R.id.Current_Password);
         String new_output = "Current: " + clockFace1.getCurrentHour() + ":" + clockFace1.getCurrentMinute()
                 + ", " + clockFace2.getCurrentHour() + ":" + clockFace2.getCurrentMinute()
                 + ", " + clockFace3.getCurrentHour() + ":" + clockFace3.getCurrentMinute()
                 + ", " + clockFace4.getCurrentHour() + ":" + clockFace4.getCurrentMinute();
-        current_password.setText(new_output, TextView.BufferType.SPANNABLE);
+        curr_pass.setText(new_output, TextView.BufferType.SPANNABLE);*/
+
         //init password type
         password_type = (TextView)findViewById(R.id.PasswordType);
         String type = "";
@@ -239,12 +240,12 @@ public class Login extends AppCompatActivity {
                     }
                     String temp;
                     if (comparePassword()) {
-                        temp = "Succes";
+                        temp = "Success";
                         login_success = true;
                         end_time = getCurrentTime();
                         password_check.setTextColor(Color.GREEN);
                     } else {
-                        temp = "Fail x" + current_attempts+1;
+                        temp = "Fail x" + (current_attempts+1);
                         password_check.setTextColor(Color.RED);
                     }
 
@@ -317,13 +318,13 @@ public class Login extends AppCompatActivity {
         return true;
     }
 
-    public void updateCurrentPasswordText(){
-        current_password = (TextView) findViewById(R.id.CurrentPassword);
+    public void updateCurrentLoginPasswordText(){
+        /*curr_pass = (TextView) findViewById(R.id.Current_Password);
         String new_output = "Current: " + clockFace1.getCurrentHour() + ":" + clockFace1.getCurrentMinute()
                 + ", " + clockFace2.getCurrentHour() + ":" + clockFace2.getCurrentMinute()
                 + ", " + clockFace3.getCurrentHour() + ":" + clockFace3.getCurrentMinute()
                 + ", " + clockFace4.getCurrentHour() + ":" + clockFace4.getCurrentMinute();
-        current_password.setText(new_output);
+        curr_pass.setText(new_output);*/
     }
 
 
@@ -332,7 +333,7 @@ public class Login extends AppCompatActivity {
         Boolean flag2 = isExternalStorageReadable();
         //Log.e(LOG_TAG,"is it writable: "+flag);
         // Log.e(LOG_TAG,"is it readable: "+flag2);
-        File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"testing.txt");
+        File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"Clock_Lock_Output.txt");
         Writer writer = null;
         try {
             writer = new FileWriter(root,true);
