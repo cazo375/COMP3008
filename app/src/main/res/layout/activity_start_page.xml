@@ -7,24 +7,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.opticnerve.nccc.IntroPage">
+    tools:context="com.opticnerve.nccc.HomePage">
 
-    <Button
+
+    <TextView
+        android:text="Clock Lock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
-        android:id="@+id/Login_Button"
-        android:layout_alignBaseline="@+id/Create_Button"
-        android:layout_alignBottom="@+id/Create_Button"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="85dp"
+        android:id="@+id/Title"
+        android:textSize="24sp" />
 
     <Button
+        android:text="Begin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create"
-        android:id="@+id/Create_Button"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="175dp"
+        android:id="@+id/Begin_Button" />
 </RelativeLayout>

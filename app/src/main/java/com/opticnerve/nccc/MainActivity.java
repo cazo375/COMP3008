@@ -9,9 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Random;
 
@@ -21,7 +19,6 @@ public class MainActivity extends Activity {
     private TimePicker timePicker2;
     private TimePicker timePicker3;
     private TimePicker timePicker4;
-    private Context context;
 
     private Button clock1;
     private Button clock2;
@@ -31,12 +28,12 @@ public class MainActivity extends Activity {
     private Button check_button;
     private Button proceed_button;
 
-
-    private Random rand;
     private TextView password;
     private TextView current_password;
     private TextView password_check;
     private TextView password_type;
+
+    private Random rand;
 
     private static int proceedCounter = 0;
 
@@ -44,10 +41,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = getApplicationContext();
 
         rand = new Random();
 
+        // init clock faces
         timePicker1 = (TimePicker) findViewById(R.id.timePicker1);
         timePicker1.setIs24HourView(true);
         timePicker1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
@@ -88,6 +85,7 @@ public class MainActivity extends Activity {
         });
 
 
+        //init buttons for selecting clock faces
         clock1 = (Button)findViewById(R.id.button);
         clock1.setBackgroundColor(Color.RED);
         clock1.setOnClickListener(new View.OnClickListener() {
@@ -156,32 +154,52 @@ public class MainActivity extends Activity {
                 }
             }
         });
-
-
-
         setTime();
+
+        // init current password display
         current_password = (TextView) findViewById(R.id.CurrentPassword);
         String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
                 + ",    " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
                 + ",    " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
                 + ",    " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
         current_password.setText(new_output, TextView.BufferType.SPANNABLE);
+
+        // T or F password checker
         password_check= (TextView) findViewById(R.id.PasswordCheck);
         password_check.setText("", TextView.BufferType.SPANNABLE);
+
+        // password to learn
         password = (TextView) findViewById(R.id.passwordTextView);
-        final int[] old_pass_out = passCreator();
-        String old_output = "Goal: " + old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
+        User data = new User();
+        String type = "";
+        int[] goal_password = new int [8];
+        if(proceedCounter==0) {
+            type = "Gmail";
+            goal_password = data.getGmail_pass();
+        }
+        if(proceedCounter==1) {
+            type = "Facebook";
+            goal_password = data.getFacebook_pass();
+        }
+        if(proceedCounter==2) {
+            type = "Bank";
+            goal_password = data.getBank_pass();
+        }
+        String goal_output = "Goal: " + goal_password[0] + ":" + goal_password[1] + ",    " + goal_password[2] + ":" + goal_password[3]
+                           + ",    " + goal_password[4] + ":" + goal_password[5] + ",    " + goal_password[6] + ":" + goal_password[7];
+        password.setText(goal_output, TextView.BufferType.SPANNABLE);
+        //init password type
+        password_type = (TextView)findViewById(R.id.PasswordType);
+        password_type.setText(type, TextView.BufferType.SPANNABLE);
 
-        //String temp = getFilesDir().getAbsolutePath();
-        password.setText(old_output, TextView.BufferType.SPANNABLE);
-        final String filename = old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
 
+        //init action buttons
         check_button = (Button)findViewById(R.id.CheckButton);
         check_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String temp;
-                if (comparePassword(old_pass_out)) {
+                if (comparePassword()) {
                     temp = "true";
                     password_check.setTextColor(Color.GREEN);
                 }
@@ -192,63 +210,17 @@ public class MainActivity extends Activity {
                 password_check.setText(temp, TextView.BufferType.SPANNABLE);
             }
         });
-        password_type = (TextView)findViewById(R.id.PasswordType);
-        String type = "";
-        if(proceedCounter==0) {
-            type = "Gmail";
-        }
-        if(proceedCounter==1) {
-            type = "Facebook";
-        }
-        if(proceedCounter==2) {
-            type = "Bank";
-        }
-        password_type.setText(type, TextView.BufferType.SPANNABLE);
 
         proceed_button = (Button)findViewById(R.id.ProceedButton);
-
         proceed_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(proceedCounter<2) {
-                    startActivity(new Intent(MainActivity.this, MainActivity.class));
-                    try {
-                        String filename = "";
-                        if(proceedCounter==0) {
-                            filename = "Gmail";
-                        }
-                        if(proceedCounter==1) {
-                            filename = "Facebook";
-                        }
-                        if(proceedCounter==2) {
-                            filename = "Bank";
-                        }
-                        String string = old_pass_out[0] + "," + old_pass_out[1] + "," + old_pass_out[2] + "," + old_pass_out[3] + ","
-                                + old_pass_out[4] + "," + old_pass_out[5] + "," + old_pass_out[6] + "," + old_pass_out[7] + "\n";
-                        FileOutputStream outputStream;
-                        outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                        outputStream.write(string.getBytes());
-                        outputStream.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                     proceedCounter+=1;
-//                    try {
-//                        FileInputStream fin = openFileInput(filename);
-//                        int c;
-//                        String temp = "";
-//                        while ((c = fin.read()) != -1) {
-//                            temp = temp + Character.toString((char) c);
-//                        }
-//                        password_check.setText(temp, TextView.BufferType.SPANNABLE);
-//                        Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
-//                    } catch (Exception e){
-//                        e.printStackTrace();
-//                    }
-
+                    startActivity(new Intent(MainActivity.this, MainActivity.class));
                 }else{
-                    startActivity(new Intent(MainActivity.this, IntroPage.class));
                     proceedCounter=0;
+                    startActivity(new Intent(MainActivity.this, HomePage.class));
                 }
             }
         });
@@ -269,11 +241,9 @@ public class MainActivity extends Activity {
 
         timePicker4.setCurrentHour(hourCreator());
         timePicker4.setCurrentMinute( minCreator());
-
     }
 
     public int hourCreator(){
-
 
         int  hour = rand.nextInt(24) + 1;
         return hour;
@@ -285,19 +255,19 @@ public class MainActivity extends Activity {
         return min;
     }
 
-    public int[] passCreator(){
-        int[] pass = new int[8];
-        for(int i = 0; i < 8; i++) {
-            if(i%2 == 0) {
-                pass[i] = rand.nextInt(12) + 1;
-            }else{
-                pass[i] = rand.nextInt(59);
-            }
-        }
-        return pass;
-    }
 
-    public boolean comparePassword(int[] true_pass){
+    public boolean comparePassword(){
+        int[] goal_password = new int [8];
+        User data = new User();
+        if(proceedCounter==0) {
+            goal_password = data.getGmail_pass();
+        }
+        if(proceedCounter==1) {
+            goal_password = data.getFacebook_pass();
+        }
+        if(proceedCounter==2) {
+            goal_password = data.getBank_pass();
+        }
         int [] curr_pass = new int[8];
         curr_pass[0] = timePicker1.getCurrentHour(); curr_pass[1] = timePicker1.getCurrentMinute();
 
@@ -308,7 +278,7 @@ public class MainActivity extends Activity {
         curr_pass[6] = timePicker4.getCurrentHour(); curr_pass[7] = timePicker4.getCurrentMinute();
 
         for(int i = 0; i<8; i++){
-            if(curr_pass[i] != true_pass[i]){
+            if(curr_pass[i] != goal_password[i]){
                 return false;
             }
         }

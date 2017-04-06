@@ -1,29 +1,28 @@
 package com.opticnerve.nccc;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.File;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
+import java.io.FileWriter;
+import java.io.Writer;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
 
-    private TimePicker timePicker1;
-    private TimePicker timePicker2;
-    private TimePicker timePicker3;
-    private TimePicker timePicker4;
-    private Context context;
+    private TimePicker clockFace1;
+    private TimePicker clockFace2;
+    private TimePicker clockFace3;
+    private TimePicker clockFace4;
 
     private Button clock1;
     private Button clock2;
@@ -33,57 +32,66 @@ public class Login extends AppCompatActivity {
     private Button proceed_button;
     private Button check_button;
 
-    private Random rand;
-    private TextView password;
+
     private TextView current_password;
     private TextView password_check;
     private TextView password_type;
 
+    private Random rand;
     private int pass_type;
-    private static boolean isClicked = false;
-    final int[] test_password = new int[8];
+    private int current_attempts;
+    private boolean login_success = false;
+    private static int test_number = 0;
+    private static int script_counter = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = getApplicationContext();
+        setContentView(R.layout.activity_login);
 
         rand = new Random();
-        readPassword();
-        timePicker1 = (TimePicker) findViewById(R.id.timePicker1);
-        timePicker1.setIs24HourView(true);
-        timePicker1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
+        TestScript scripter = new TestScript();
+        if(test_number == 0){
+            scripter.generateScript();
+        }
+
+        pass_type = scripter.getTest_order()[test_number];
+        current_attempts = 0;
+        // init clock faces
+        clockFace1 = (TimePicker) findViewById(R.id.Login_Clock1);
+        clockFace1.setIs24HourView(true);
+        clockFace1.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 updateCurrentPasswordText();
             }
         });
 
-        timePicker2 = (TimePicker) findViewById(R.id.timePicker2);
-        timePicker2.setIs24HourView(true);
-        timePicker2.setVisibility(View.INVISIBLE);
-        timePicker2.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
+        clockFace2 = (TimePicker) findViewById(R.id.Login_Clock2);
+        clockFace2.setIs24HourView(true);
+        clockFace2.setVisibility(View.INVISIBLE);
+        clockFace2.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 updateCurrentPasswordText();
             }
         });
 
-        timePicker3 = (TimePicker) findViewById(R.id.timePicker3);
-        timePicker3.setIs24HourView(true);
-        timePicker3.setVisibility(View.INVISIBLE);
-        timePicker3.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
+        clockFace3 = (TimePicker) findViewById(R.id.Login_Clock3);
+        clockFace3.setIs24HourView(true);
+        clockFace3.setVisibility(View.INVISIBLE);
+        clockFace3.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 updateCurrentPasswordText();
             }
         });
 
-        timePicker4 = (TimePicker) findViewById(R.id.timePicker4);
-        timePicker4.setIs24HourView(true);
-        timePicker4.setVisibility(View.INVISIBLE);
-        timePicker4.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
+        clockFace4 = (TimePicker) findViewById(R.id.Login_Clock4);
+        clockFace4.setIs24HourView(true);
+        clockFace4.setVisibility(View.INVISIBLE);
+        clockFace4.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener(){
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 updateCurrentPasswordText();
@@ -91,128 +99,85 @@ public class Login extends AppCompatActivity {
         });
 
 
-        clock1 = (Button)findViewById(R.id.button);
+        //init buttons for selecting clock faces
+        clock1 = (Button)findViewById(R.id.Clock_Button1);
         clock1.setBackgroundColor(Color.RED);
         clock1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timePicker1.getVisibility() == View.INVISIBLE) {
+                if(clockFace1.getVisibility() == View.INVISIBLE) {
                     clock1.setBackgroundColor(Color.RED);
                     clock2.setBackgroundColor(Color.WHITE);
                     clock3.setBackgroundColor(Color.WHITE);
                     clock4.setBackgroundColor(Color.WHITE);
-                    timePicker1.setVisibility(View.VISIBLE);
-                    timePicker2.setVisibility(View.INVISIBLE);
-                    timePicker3.setVisibility(View.INVISIBLE);
-                    timePicker4.setVisibility(View.INVISIBLE);
+                    clockFace1.setVisibility(View.VISIBLE);
+                    clockFace2.setVisibility(View.INVISIBLE);
+                    clockFace3.setVisibility(View.INVISIBLE);
+                    clockFace4.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
-        clock2 = (Button)findViewById(R.id.button2);
+        clock2 = (Button)findViewById(R.id.Clock_Button2);
         clock2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timePicker2.getVisibility() == View.INVISIBLE) {
+                if(clockFace2.getVisibility() == View.INVISIBLE) {
                     clock1.setBackgroundColor(Color.WHITE);
                     clock2.setBackgroundColor(Color.RED);
                     clock3.setBackgroundColor(Color.WHITE);
                     clock4.setBackgroundColor(Color.WHITE);
-                    timePicker1.setVisibility(View.INVISIBLE);
-                    timePicker2.setVisibility(View.VISIBLE);
-                    timePicker3.setVisibility(View.INVISIBLE);
-                    timePicker4.setVisibility(View.INVISIBLE);
+                    clockFace1.setVisibility(View.INVISIBLE);
+                    clockFace2.setVisibility(View.VISIBLE);
+                    clockFace3.setVisibility(View.INVISIBLE);
+                    clockFace4.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
-        clock3 = (Button)findViewById(R.id.button3);
+        clock3 = (Button)findViewById(R.id.Clock_Button3);
         clock3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timePicker3.getVisibility() == View.INVISIBLE) {
+                if(clockFace3.getVisibility() == View.INVISIBLE) {
                     clock1.setBackgroundColor(Color.WHITE);
                     clock2.setBackgroundColor(Color.WHITE);
                     clock3.setBackgroundColor(Color.RED);
                     clock4.setBackgroundColor(Color.WHITE);
-                    timePicker1.setVisibility(View.INVISIBLE);
-                    timePicker2.setVisibility(View.INVISIBLE);
-                    timePicker3.setVisibility(View.VISIBLE);
-                    timePicker4.setVisibility(View.INVISIBLE);
+                    clockFace1.setVisibility(View.INVISIBLE);
+                    clockFace2.setVisibility(View.INVISIBLE);
+                    clockFace3.setVisibility(View.VISIBLE);
+                    clockFace4.setVisibility(View.INVISIBLE);
                 }
             }
         });
 
-        clock4 = (Button)findViewById(R.id.button4);
+        clock4 = (Button)findViewById(R.id.Clock_Button4);
         clock4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(timePicker4.getVisibility() == View.INVISIBLE) {
+                if(clockFace4.getVisibility() == View.INVISIBLE) {
                     clock1.setBackgroundColor(Color.WHITE);
                     clock2.setBackgroundColor(Color.WHITE);
                     clock3.setBackgroundColor(Color.WHITE);
                     clock4.setBackgroundColor(Color.RED);
-                    timePicker1.setVisibility(View.INVISIBLE);
-                    timePicker2.setVisibility(View.INVISIBLE);
-                    timePicker3.setVisibility(View.INVISIBLE);
-                    timePicker4.setVisibility(View.VISIBLE);
+                    clockFace1.setVisibility(View.INVISIBLE);
+                    clockFace2.setVisibility(View.INVISIBLE);
+                    clockFace3.setVisibility(View.INVISIBLE);
+                    clockFace4.setVisibility(View.VISIBLE);
                 }
             }
         });
-
-
-
         setTime();
+
+        // init current password display
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
-                + ", " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
-                + ", " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
-                + ", " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
+        String new_output = "Current: " + clockFace1.getCurrentHour() + ":" + clockFace1.getCurrentMinute()
+                + ", " + clockFace2.getCurrentHour() + ":" + clockFace2.getCurrentMinute()
+                + ", " + clockFace3.getCurrentHour() + ":" + clockFace3.getCurrentMinute()
+                + ", " + clockFace4.getCurrentHour() + ":" + clockFace4.getCurrentMinute();
         current_password.setText(new_output, TextView.BufferType.SPANNABLE);
-
-
-        password = (TextView) findViewById(R.id.passwordTextView);
-        int[] old_pass_out = passCreator();
-        String old_output = "Goal: " + old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
-
-        //String temp = getFilesDir().getAbsolutePath();
-        password.setText(old_output, TextView.BufferType.SPANNABLE);
-        final String filename = old_pass_out[0] + ":" + old_pass_out[1] + ",    " + old_pass_out[2] + ":" + old_pass_out[3] + ",    " + old_pass_out[4] + ":" + old_pass_out[5] + ",    " + old_pass_out[6] + ":" + old_pass_out[7];
-        proceed_button = (Button)findViewById(R.id.ProceedButton);
-        proceed_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Login.this, Login.class));
-                isClicked = false;
-            }
-        });
-
-        check_button = (Button)findViewById(R.id.CheckButton);
-        password_check = (TextView) findViewById(R.id.PasswordCheck);
-        password_check.setVisibility(View.INVISIBLE);
-        check_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!isClicked) {
-                    if(password_check.getVisibility() == View.INVISIBLE) {
-                        password_check.setVisibility(View.VISIBLE);
-                    }
-                    String temp;
-                    if (comparePassword(test_password)) {
-                        temp = "true";
-                        password_check.setTextColor(Color.GREEN);
-                    } else {
-                        temp = "false";
-                        password_check.setTextColor(Color.RED);
-                    }
-                    isClicked = true;
-                    password_check.setText(temp, TextView.BufferType.SPANNABLE);
-                }
-
-
-            }
-        });
-
+        //init password type
         password_type = (TextView)findViewById(R.id.PasswordType);
         String type = "";
         if(pass_type==0) {
@@ -226,21 +191,75 @@ public class Login extends AppCompatActivity {
         }
         password_type.setText(type, TextView.BufferType.SPANNABLE);
 
+        // T or F password checker
+        password_check = (TextView) findViewById(R.id.PasswordCheck);
+        password_check.setText("", TextView.BufferType.SPANNABLE);
+        password_check.setVisibility(View.INVISIBLE);
+
+
+        //init action buttons
+        proceed_button = (Button)findViewById(R.id.ProceedButton);
+        proceed_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(Login.this, Login.class));
+                User data = new User();
+                data.recordResults(pass_type, script_counter, current_attempts, login_success);
+                if(test_number <2) {
+                    test_number++;
+                }
+                else{
+                    test_number = 0;
+                    if(script_counter<2) {
+                        script_counter++;
+                    }
+                    else {
+                        script_counter = 0;
+                        writeOut(data.printResults());
+                        startActivity(new Intent(Login.this, EndScreen.class));
+                    }
+                }
+            }
+        });
+
+        check_button = (Button)findViewById(R.id.CheckButton);
+        check_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(current_attempts < 2) {
+                    if(password_check.getVisibility() == View.INVISIBLE) {
+                        password_check.setVisibility(View.VISIBLE);
+                    }
+                    String temp;
+                    if (comparePassword()) {
+                        temp = "Succes";
+                        login_success = true;
+                        password_check.setTextColor(Color.GREEN);
+                    } else {
+                        temp = "Fail x" + current_attempts+1;
+                        password_check.setTextColor(Color.RED);
+                    }
+
+                    password_check.setText(temp, TextView.BufferType.SPANNABLE);
+                }
+                current_attempts++;
+            }
+        });
 
     }
 
     public void setTime() {
-        timePicker1.setCurrentHour(hourCreator());
-        timePicker1.setCurrentMinute( minCreator());
+        clockFace1.setCurrentHour(hourCreator());
+        clockFace1.setCurrentMinute( minCreator());
 
-        timePicker2.setCurrentHour(hourCreator());
-        timePicker2.setCurrentMinute( minCreator());
+        clockFace2.setCurrentHour(hourCreator());
+        clockFace2.setCurrentMinute( minCreator());
 
-        timePicker3.setCurrentHour(hourCreator());
-        timePicker3.setCurrentMinute( minCreator());
+        clockFace3.setCurrentHour(hourCreator());
+        clockFace3.setCurrentMinute( minCreator());
 
-        timePicker4.setCurrentHour(hourCreator());
-        timePicker4.setCurrentMinute( minCreator());
+        clockFace4.setCurrentHour(hourCreator());
+        clockFace4.setCurrentMinute( minCreator());
 
     }
 
@@ -254,27 +273,28 @@ public class Login extends AppCompatActivity {
         return min;
     }
 
-    public int[] passCreator(){
-        int[] pass = new int[8];
-        for(int i = 0; i < 8; i++) {
-            if(i%2 == 0) {
-                pass[i] = rand.nextInt(12) + 1;
-            }else{
-                pass[i] = rand.nextInt(59);
-            }
+    public boolean comparePassword(){
+        int [] true_pass = new int[8];
+        User data = new User();
+        if(pass_type==0) {
+            true_pass = data.getGmail_pass();
         }
-        return pass;
-    }
+        if(pass_type==1) {
+            true_pass = data.getFacebook_pass();
 
-    public boolean comparePassword(int[] true_pass){
+        }
+        if(pass_type==2) {
+            true_pass = data.getBank_pass();
+        }
+
         int [] curr_pass = new int[8];
-        curr_pass[0] = timePicker1.getCurrentHour(); curr_pass[1] = timePicker1.getCurrentMinute();
+        curr_pass[0] = clockFace1.getCurrentHour(); curr_pass[1] = clockFace1.getCurrentMinute();
 
-        curr_pass[2] = timePicker2.getCurrentHour(); curr_pass[3] = timePicker2.getCurrentMinute();
+        curr_pass[2] = clockFace2.getCurrentHour(); curr_pass[3] = clockFace2.getCurrentMinute();
 
-        curr_pass[4] = timePicker3.getCurrentHour(); curr_pass[5] = timePicker3.getCurrentMinute();
+        curr_pass[4] = clockFace3.getCurrentHour(); curr_pass[5] = clockFace3.getCurrentMinute();
 
-        curr_pass[6] = timePicker4.getCurrentHour(); curr_pass[7] = timePicker4.getCurrentMinute();
+        curr_pass[6] = clockFace4.getCurrentHour(); curr_pass[7] = clockFace4.getCurrentMinute();
 
         for(int i = 0; i<8; i++){
             if(curr_pass[i] != true_pass[i]){
@@ -286,71 +306,63 @@ public class Login extends AppCompatActivity {
 
     public void updateCurrentPasswordText(){
         current_password = (TextView) findViewById(R.id.CurrentPassword);
-        String new_output = "Current: " + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute()
-                + ", " + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute()
-                + ", " + timePicker3.getCurrentHour() + ":" + timePicker3.getCurrentMinute()
-                + ", " + timePicker4.getCurrentHour() + ":" + timePicker4.getCurrentMinute();
+        String new_output = "Current: " + clockFace1.getCurrentHour() + ":" + clockFace1.getCurrentMinute()
+                + ", " + clockFace2.getCurrentHour() + ":" + clockFace2.getCurrentMinute()
+                + ", " + clockFace3.getCurrentHour() + ":" + clockFace3.getCurrentMinute()
+                + ", " + clockFace4.getCurrentHour() + ":" + clockFace4.getCurrentMinute();
         current_password.setText(new_output);
-
-
     }
 
-    public void readPassword(){
-        String filename = "";
-        pass_type = rand.nextInt(3);
-        if(pass_type==0) {
-            filename = "Gmail";
-        }
-        if(pass_type==1) {
-            filename = "Facebook";
-        }
-        if(pass_type==2) {
-            filename = "Bank";
-        }
 
+    public void writeOut(String out){
+        Boolean flag = isExternalStorageWritable();
+        Boolean flag2 = isExternalStorageReadable();
+        //Log.e(LOG_TAG,"is it writable: "+flag);
+        // Log.e(LOG_TAG,"is it readable: "+flag2);
+        File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"testing.txt");
+        Writer writer = null;
         try {
-            FileInputStream fin = openFileInput(filename);
-            int c;
-            String temp = "";
-            while ((c = fin.read()) != -1) {
-                temp = temp + Character.toString((char) c);
-            }
-            int foot = 0;
-            int head = temp.indexOf(",");
-            test_password[0] = Integer.parseInt(temp.substring(foot, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[1] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[2] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[3] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[4] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[5] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf(",", foot+1);
-            test_password[6] = Integer.parseInt(temp.substring(foot+1, head));
-
-            foot = head;
-            head = temp.indexOf("\n", foot+1);
-            test_password[7] = Integer.parseInt(temp.substring(foot+1, head));
-
-            password.setText(temp, TextView.BufferType.SPANNABLE);
-            Toast.makeText(getBaseContext(), "file read", Toast.LENGTH_SHORT).show();
-        } catch (Exception e){
+            writer = new FileWriter(root,true);
+            writer.append(out + "\n\n\n");
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public void writeOut(){
+        Boolean flag = isExternalStorageWritable();
+        Boolean flag2 = isExternalStorageReadable();
+        //Log.e(LOG_TAG,"is it writable: "+flag);
+       // Log.e(LOG_TAG,"is it readable: "+flag2);
+        File root = new File(Environment.getExternalStorageDirectory().getAbsoluteFile(),"testing.txt");
+        Writer writer = null;
+         try {
+             writer = new FileWriter(root,true);
+             writer.append("Testerino\n");
+             writer.flush();
+             writer.close();
+         } catch (Exception e) {
+             e.printStackTrace();
+         }
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+    /* Checks if external storage is available to at least read */
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+            Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
 }

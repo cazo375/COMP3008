@@ -7,4 +7,5 @@
     <string name="time_save">Save</string>
     <string name="time_selected"></string>
     <string name="time_current">The Time is:</string>
+    <string name="title_activity_start_page">StartPage</string>
 </resources>
