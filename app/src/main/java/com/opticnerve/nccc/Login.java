@@ -15,6 +15,7 @@ import android.widget.TimePicker;
 
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.Calendar;
 import java.util.Random;
 
 public class Login extends AppCompatActivity {
@@ -32,11 +33,13 @@ public class Login extends AppCompatActivity {
     private Button proceed_button;
     private Button check_button;
 
-
     private TextView current_password;
     private TextView password_check;
     private TextView password_type;
 
+    private String start_time = "";
+    private String end_time = "";
+    private Calendar calendar;
     private Random rand;
     private int pass_type;
     private int current_attempts;
@@ -50,6 +53,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        start_time = getCurrentTime();
         rand = new Random();
         TestScript scripter = new TestScript();
         if(test_number == 0){
@@ -204,7 +208,10 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 startActivity(new Intent(Login.this, Login.class));
                 User data = new User();
-                data.recordResults(pass_type, script_counter, current_attempts, login_success);
+                if(end_time == ""){
+                    end_time = getCurrentTime();
+                }
+                data.recordResults(pass_type, script_counter, current_attempts, login_success, start_time, end_time);
                 if(test_number <2) {
                     test_number++;
                 }
@@ -234,6 +241,7 @@ public class Login extends AppCompatActivity {
                     if (comparePassword()) {
                         temp = "Succes";
                         login_success = true;
+                        end_time = getCurrentTime();
                         password_check.setTextColor(Color.GREEN);
                     } else {
                         temp = "Fail x" + current_attempts+1;
@@ -246,6 +254,11 @@ public class Login extends AppCompatActivity {
             }
         });
 
+    }
+
+    public String getCurrentTime(){
+        calendar = Calendar.getInstance();
+        return calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND);
     }
 
     public void setTime() {
