@@ -132,7 +132,7 @@ public class User {
 
     public int hourCreator(){
         Random rand = new Random();
-        int  hour = rand.nextInt(24) + 1;
+        int  hour = rand.nextInt(23);
         return hour;
     }
 
