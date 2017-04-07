@@ -1,3 +1,18 @@
+/*
+User.java is our Main data collection and storage class
+
+It generates random starting passwords upon user creation via username.
+But when using an empty constructor it is used as a user pointer
+User class stores username, each type of passwords, attempts per test,
+starts and ends of each test, and the success of each test.
+
+PrintResuts used to dump data to log file.
+RecordResults used to update user with new test data.
+
+*/
+
+
+
 package com.opticnerve.nccc;
 
 

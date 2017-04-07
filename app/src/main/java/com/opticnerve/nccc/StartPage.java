@@ -1,3 +1,15 @@
+/*
+StartPage.java is the initializer of our app
+
+Enters from End Screen
+
+This page welcomes the participant and creates a new user object upon clicking begin.
+
+Exits to home screen
+ */
+
+
+
 package com.opticnerve.nccc;
 
 import android.content.Intent;

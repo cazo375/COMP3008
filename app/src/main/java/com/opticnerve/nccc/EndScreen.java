@@ -1,3 +1,18 @@
+/*
+EndScreen.Java used for flow of app use
+
+Enter from end of Login test.
+
+Thanks the participant.
+
+Exits to the StartPage
+
+ */
+
+
+
+
+
 package com.opticnerve.nccc;
 
 import android.content.Intent;

@@ -1,3 +1,18 @@
+/*
+HomePage.java is our main directory
+
+Enter from StartPage, or Practice
+
+Here the user selects which action they wish to do:
+"Login" where the user is tested on the passwords. (non-returnable)
+"Practice" where the user is taught the passwords. (returnable)
+
+Exits to Login, or Practice.
+
+ */
+
+
+
 package com.opticnerve.nccc;
 
 import android.content.Intent;

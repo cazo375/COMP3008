@@ -1,3 +1,26 @@
+/*
+Login.java is our testing interface
+
+Enter from home page
+
+It uses various android buttons to fulfill various actions on the page.
+Most importantly it uses the TimePicker widget is used as password input.
+User enters their password by rotating the clock faces to the times in their
+password and then the pass word is check against the data stored in the User object
+to confirm a successful entry
+
+Underlying the main test is the test script generator used to make the order of tests
+each round. As well as Data collection done through writing attempts, pass or fail,
+as well as start and end to the User Object.
+
+When the test is completed it triggers a dump of the collected test date to an
+output.txt to be collected post testing.
+
+Exits to EndScreen
+
+ */
+
+
 package com.opticnerve.nccc;
 
 import android.content.Intent;

@@ -1,3 +1,11 @@
+/*
+TestScript.java
+
+used to return and array of 3 unique ints pre each test round.
+
+ */
+
+
 package com.opticnerve.nccc;
 
 import java.util.Random;

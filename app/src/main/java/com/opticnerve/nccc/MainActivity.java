@@ -1,3 +1,21 @@
+/*
+MainActivity.java is out practice interface
+
+Enter from Home Page
+
+This interface operates similarly to the Login testing with a few exceptions.
+Data for testing is not recorded here.
+User password is displayed so user can learn it.
+Can be used unlimited times.
+
+Exits to Home Page
+
+ */
+
+
+
+
+
 package com.opticnerve.nccc;
 
 import android.app.Activity;
